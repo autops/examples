@@ -59,9 +59,9 @@ export class MyChart extends Chart {
         ]
       }]
     })
-    
+
     const backend = IngressBackend.fromService(deployment.exposeViaService({ports: [{port: 9898}]}));
-    
+
     const ingress = new Ingress(this, 'ingress', {
       metadata: {
         annotations: {
@@ -75,7 +75,7 @@ export class MyChart extends Chart {
     });
     ingress.addHostRule('k8s-podinfo.mydomain.tld', '/', backend)
     ingress.addTls([{hosts: ['k8s-podinfo.mydomain.tld']}])
-   
+
     // Add ingressClassName (not supported by CDK atm)
     const ing = ApiObject.of(ingress)
     ing?.addJsonPatch(JsonPatch.add('/spec/ingressClassName', 'alb'))

@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Placeholder Empty 1`] = `
+Array [
+  Object {
+    "apiVersion": "cert-manager.io/v1",
+    "kind": "Certificate",
+    "metadata": Object {
+      "name": "test-chart-cert-c880d2cf",
+    },
+    "spec": Object {
+      "issuerRef": Object {
+        "name": "mysecretissuer",
+      },
+      "secretName": "mysecret",
+    },
+  },
+]
+`;
