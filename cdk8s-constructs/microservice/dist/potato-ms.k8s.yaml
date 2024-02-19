@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    vault.hashicorp.com/agent-init-first: "true"
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/agent-inject-secret-aws: aws/creds/potato
+    vault.hashicorp.com/agent-inject-template-aws: |-
+      {{- with secret "aws/creds/potato-role" }}
+      [default]
+      aws_access_key_id={{ .Data.access_key }}
+      aws_secret_access_key={{ .Data.secret_key }}
+      aws_session_token={{ .Data.security_token }}
+      {{- end }}
+    vault.hashicorp.com/secret-volume-path-aws: /home/potato/.aws/
+  name: potato
+spec:
+  minReadySeconds: 0
+  progressDeadlineSeconds: 600
+  replicas: 2
+  selector:
+    matchLabels:
+      cdk8s.io/metadata.addr: potato-ms-ms-deployment-c82869ed
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        cdk8s.io/metadata.addr: potato-ms-ms-deployment-c82869ed
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - image: nginx
+          imagePullPolicy: Always
+          name: main
+          resources:
+            limits:
+              cpu: 1500m
+              memory: 2048Mi
+            requests:
+              cpu: 1000m
+              memory: 512Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            privileged: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+      dnsPolicy: ClusterFirst
+      hostNetwork: false
+      restartPolicy: Always
+      securityContext:
+        fsGroupChangePolicy: Always
+        runAsNonRoot: true
+      setHostnameAsFQDN: false
+      terminationGracePeriodSeconds: 30
